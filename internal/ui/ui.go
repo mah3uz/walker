@@ -223,10 +223,24 @@ func setupElementsPassword(app *gtk.Application) *Elements {
 	return ui
 }
 
+func handleThemeSelection() {
+	if singleModule == nil || singleModule.General().Name != "themes" {
+		return
+	}
+
+	entry := gioutil.ObjectValue[util.Entry](common.items.Item(common.selection.Selected()))
+
+	handleThemeSwitcher(entry.Label)
+}
+
 func setupCommon(app *gtk.Application) {
 	items := gioutil.NewListModel[util.Entry]()
 	selection := gtk.NewSingleSelection(items.ListModel)
 	selection.SetAutoselect(true)
+
+	selection.ConnectSelectionChanged(func(n uint, _ uint) {
+		handleThemeSelection()
+	})
 
 	factory := setupFactory()
 

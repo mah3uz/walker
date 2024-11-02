@@ -70,6 +70,14 @@
       "name": "custom_commands",
       "placeholder": "Custom Commands"
     },
+    "themes": {
+      "weight": 5,
+      "icon": "utilities-terminal",
+      "name": "themes",
+      "placeholder": "Themes",
+      "refresh": true,
+      "switcher_only": true
+    },
     "emojis": {
       "exec": "wl-copy",
       "weight": 5,

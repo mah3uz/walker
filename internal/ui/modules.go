@@ -79,6 +79,7 @@ func setAvailables(cfg *config.Config) {
 		&emojis.Emojis{},
 		&modules.CustomCommands{},
 		&windows.Windows{},
+		&modules.Themes{},
 	}
 
 	if !appstate.IsService {

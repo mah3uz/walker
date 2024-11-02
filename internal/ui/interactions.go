@@ -408,6 +408,11 @@ func activateItem(keepOpen, selectNext, alt bool) {
 		return
 	}
 
+	if entry.Sub == "Themes" {
+		handleThemeSwitcher(entry.Label)
+		return
+	}
+
 	if entry.Sub == "switcher" {
 		handleSwitcher(entry.Label)
 		return
@@ -458,6 +463,20 @@ func activateItem(keepOpen, selectNext, alt bool) {
 	}
 
 	closeAfterActivation(keepOpen, selectNext)
+}
+
+func handleThemeSwitcher(theme string) {
+	glib.IdleAdd(func() {
+		if cfg.Theme == theme {
+			return
+		}
+
+		cfg.Theme = theme
+
+		layout = config.GetLayout(theme, []string{})
+
+		setupLayout(theme, []string{})
+	})
 }
 
 func handleSwitcher(module string) {

@@ -66,8 +66,13 @@ type Builtins struct {
 	Runner         Runner         `mapstructure:"runner"`
 	SSH            SSH            `mapstructure:"ssh"`
 	Switcher       Switcher       `mapstructure:"switcher"`
+	Themes         ThemeSwitcher  `mapstructure:"themes"`
 	Websearch      Websearch      `mapstructure:"websearch"`
 	Windows        Windows        `mapstructure:"windows"`
+}
+
+type ThemeSwitcher struct {
+	GeneralModule `mapstructure:",squash"`
 }
 
 type Calc struct {
