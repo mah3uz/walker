@@ -41,6 +41,7 @@ require (
 
 require (
 	github.com/KarpelesLab/weak v0.1.1 // indirect
+	github.com/godbus/dbus/v5 v5.1.0
 	github.com/junegunn/fzf v0.56.0
 	github.com/knadh/koanf/providers/rawbytes v0.1.0
 	github.com/neurlang/wayland v0.1.36
@@ -48,4 +49,5 @@ require (
 	golang.org/x/image v0.22.0 // indirect
 	golang.org/x/sync v0.9.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/term v0.27.0
 )
