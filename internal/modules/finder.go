@@ -154,7 +154,32 @@ func (f *Finder) Entries(term string) []util.Entry {
 func (f *Finder) Setup() bool {
 	f.config = config.Cfg.Builtins.Finder
 
-	fmt.Println(f.config.CustomKeybinds)
+	keybinds := make(util.Keybinds)
+
+	f.General().Keybinds = keybinds
+
+	f.General()
+
+	for _, v := range f.config.CustomKeybinds {
+		if ok := keybinds.Validate(v.Key); ok {
+			keybinds.Bind(v.Key, func() bool {
+				toRun := strings.ReplaceAll(e.Config.Cmd, "%RESULT%", result)
+
+				cmd := exec.Command("sh", "-c", v.Cmd)
+
+				err := cmd.Start()
+				if err != nil {
+					slog.Error("custom command", "error", err.Error())
+				}
+
+				go func() {
+					cmd.Wait()
+				}()
+
+				return true
+			})
+		}
+	}
 
 	return true
 }

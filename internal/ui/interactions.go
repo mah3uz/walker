@@ -88,6 +88,7 @@ var lastQuery = ""
 func setupInteractions(appstate *state.AppState) {
 	go setupCommands()
 	parseKeybinds()
+	parseAiKeybinds()
 
 	elements.input.Connect("changed", func() {
 		text := trimArgumentDelimiter(elements.input.Text())
@@ -289,7 +290,23 @@ func handleGlobalKeysPressed(val uint, code uint, modifier gdk.ModifierType) boo
 				val = gdk.KEY_Tab
 			}
 
-			hasBind := binds.execute(int(val), modifier)
+			var hasBind bool
+
+			entry := gioutil.ObjectValue[util.Entry](common.items.Item(common.selection.Selected()))
+
+			module := findModule(entry.Module, toUse)
+
+			hasBind = module.General().Keybinds.Execute(int(val), modifier)
+
+			if isAi {
+				hasBind = aibinds.Execute(int(val), modifier)
+			} else {
+				hasBind = binds.Execute(int(val), modifier)
+			}
+
+			if isAi && !hasBind {
+				hasBind = binds.Execute(int(val), modifier)
+			}
 
 			if hasBind {
 				return true

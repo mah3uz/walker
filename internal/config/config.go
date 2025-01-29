@@ -228,8 +228,9 @@ type GeneralModule struct {
 	OutputPlaceholder  string                 `koanf:"output_placeholder"`
 
 	// internal
-	HasInitialSetup bool `koanf:"-"`
-	IsSetup         bool `koanf:"-"`
+	HasInitialSetup bool          `koanf:"-"`
+	IsSetup         bool          `koanf:"-"`
+	Keybinds        util.Keybinds `koanf:"-"`
 }
 
 type Blacklist struct {
