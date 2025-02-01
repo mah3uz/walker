@@ -160,10 +160,10 @@ func (f *Finder) Setup() bool {
 
 	f.General()
 
-	for _, v := range f.config.CustomKeybinds {
+	for _, v := range f.config.Keybinds {
 		if ok := keybinds.Validate(v.Key); ok {
 			keybinds.Bind(v.Key, func() bool {
-				toRun := strings.ReplaceAll(e.Config.Cmd, "%RESULT%", result)
+				toRun := strings.ReplaceAll(f.config.Cmd, "%RESULT%", result)
 
 				cmd := exec.Command("sh", "-c", v.Cmd)
 

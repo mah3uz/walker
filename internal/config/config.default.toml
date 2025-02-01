@@ -10,25 +10,75 @@ timeout = 0
 disable_click_to_close = false
 force_keyboard_focus = false
 
-[keys]
-accept_typeahead = ["tab"]
-trigger_labels = "lalt"
-next = ["down"]
-prev = ["up"]
-close = ["esc"]
-remove_from_history = ["shift backspace"]
-resume_query = ["ctrl r"]
-toggle_exact_search = ["ctrl m"]
+[[keybinds]]
+label = "Activate"
+cmd = "%ACTIVATE%"
+key = "enter"
 
-[keys.activation_modifiers]
-keep_open = "shift"
-alternate = "alt"
+[[keybinds]]
+label = "Toggle Labels"
+cmd = "%TOGGLE_LABELS%"
+key = "lalt"
 
-[keys.ai]
-clear_session = ["ctrl x"]
-copy_last_response = ["ctrl c"]
-resume_session = ["ctrl r"]
-run_last_response = ["ctrl e"]
+[[keybinds]]
+label = "Accept Typeahead"
+cmd = "%ACCEPT_TYPEAHEAD%"
+key = "tab"
+
+[[keybinds]]
+label = "Next"
+cmd = "%NEXT%"
+key = "down"
+
+[[keybinds]]
+label = "Previous"
+cmd = "%PREV%"
+key = "up"
+
+[[keybinds]]
+label = "Close"
+cmd = "%CLOSE%"
+key = "esc"
+
+[[keybinds]]
+label = "Remove from History"
+cmd = "%REMOVE_FROM_HISTORY%"
+key = "shift backspace"
+
+[[keybinds]]
+label = "Resume Query"
+cmd = "%RESUME_QUERY%"
+key = "ctr r"
+
+[[keybinds]]
+label = "Toggle Exact Search"
+cmd = "%TOGGLE_EXACT_SEARCH%"
+key = "ctr m"
+
+[[keybinds]]
+label = "Activate (Keep Open)"
+cmd = "%ACTIVATE_KEEP_OPEN%"
+key = "shift enter"
+
+[[builtins.ai.keybinds]]
+label = "Clear Session"
+cmd = "%CLEAR_SESSION%"
+key = "ctr x"
+
+[[builtins.ai.keybinds]]
+label = "Copy Last Response"
+cmd = "%COPY_LAST_RESPONSE%"
+key = "ctr c"
+
+[[builtins.ai.keybinds]]
+label = "Resume Session"
+cmd = "%RESUME_SESSION%"
+key = "ctr r"
+
+[[builtins.ai.keybinds]]
+label = "Run Last Response"
+cmd = "%RUN_LAST_RESPONSE%"
+key = "ctr e"
 
 [events]
 on_activate = ""

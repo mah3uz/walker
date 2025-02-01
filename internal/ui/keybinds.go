@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"log/slog"
 	"slices"
 	"strings"
 
@@ -22,79 +23,46 @@ var (
 	activateAltModifier = gdk.AltMask
 )
 
-func parseAiKeybinds() {
-	aibinds = make(util.Keybinds)
+type Keybinds map[string]util.Keybinds
 
-	for _, v := range config.Cfg.Keys.Ai.ClearSession {
-		aibinds.Validate(v)
-		aibinds.Bind(v, aiClearSession)
-	}
+var (
+	keybinds       Keybinds
+	builtinActions = map[string]func(){}
+)
 
-	for _, v := range config.Cfg.Keys.Ai.CopyLastResponse {
-		aibinds.Validate(v)
-		aibinds.Bind(v, aiCopyLast)
-	}
-
-	for _, v := range config.Cfg.Keys.Ai.ResumeSession {
-		aibinds.Validate(v)
-		aibinds.Bind(v, aiResume)
-	}
-
-	for _, v := range config.Cfg.Keys.Ai.RunLastResponse {
-		aibinds.Validate(v)
-		aibinds.Bind(v, aiExecuteLast)
-	}
+func setupBuiltinActions() {
+	builtinActions = make(map[string]func())
+	builtinActions["%ACTIVATE%"] = func() { activate(false, false) }
+	builtinActions["%ACTIVATE_KEEP_OPEN%"] = func() { activate(true, false) }
+	builtinActions["%TOGGLE_LABELS%"] = func() { toggleAM() }
+	builtinActions["%ACCEPT_TYPEAHEAD%"] = func() { elements.input.GrabFocus() }
+	builtinActions["%NEXT%"] = func() { selectNext() }
+	builtinActions["%PREV%"] = func() { selectPrev() }
+	builtinActions["%CLOSE%"] = func() { quitKeybind() }
+	builtinActions["%REMOVE_FROM_HISTORY%"] = func() { deleteFromHistory() }
+	builtinActions["%RESUME_QUERY%"] = func() { resume() }
+	builtinActions["%TOGGLE_EXACT_SEARCH%"] = func() { toggleExactMatch() }
 }
 
 func parseKeybinds() {
-	binds = make(util.Keybinds)
+	keybinds = make(Keybinds)
+	keybinds["global"] = make(util.Keybinds)
 
-	for _, v := range config.Cfg.Keys.AcceptTypeahead {
-		if ok := binds.Validate(v); ok {
-			binds.Bind(v, acceptTypeahead)
+	for _, v := range config.Cfg.Keybinds {
+		if ok := util.ValidateKeybind(v.Key); ok {
+			key, modifier := util.ParseKeybind(v.Key)
+
+			if _, ok := keybinds["global"][key]; !ok {
+				keybinds["global"][key] = make(map[gdk.ModifierType]util.KeybindCommand)
+			}
+
+			if _, ok := keybinds["global"][key][modifier]; !ok {
+				keybinds["global"][key][modifier] = v
+			} else {
+				slog.Error("keybinds", "duplicate keybind", v.Key, "module", "global")
+			}
 		}
 	}
-
-	for _, v := range config.Cfg.Keys.Close {
-		binds.Validate(v)
-		binds.Bind(v, quitKeybind)
-	}
-
-	for _, v := range config.Cfg.Keys.Next {
-		binds.Validate(v)
-		binds.Bind(v, selectNext)
-	}
-
-	for _, v := range config.Cfg.Keys.Prev {
-		binds.Validate(v)
-		binds.Bind(v, selectPrev)
-	}
-
-	for _, v := range config.Cfg.Keys.RemoveFromHistory {
-		binds.Validate(v)
-		binds.Bind(v, deleteFromHistory)
-	}
-
-	for _, v := range config.Cfg.Keys.ResumeQuery {
-		binds.Validate(v)
-		binds.Bind(v, resume)
-	}
-
-	for _, v := range config.Cfg.Keys.ToggleExactSearch {
-		binds.Validate(v)
-		binds.Bind(v, toggleExactMatch)
-	}
-
-	binds.Bind("enter", func() bool { return activate(false, false) })
-	binds.Bind(strings.Join([]string{config.Cfg.Keys.ActivationModifiers.KeepOpen, "enter"}, " "), func() bool { return activate(true, false) })
-	binds.Bind(strings.Join([]string{config.Cfg.Keys.ActivationModifiers.Alternate, "enter"}, " "), func() bool { return activate(false, true) })
-
-	keepOpenModifier = util.Modifiers[config.Cfg.Keys.ActivationModifiers.KeepOpen]
-	activateAltModifier = util.Modifiers[config.Cfg.Keys.ActivationModifiers.Alternate]
-
-	binds.ValidateTriggerLabels(config.Cfg.Keys.TriggerLabels)
-	labelTrigger = util.ModifiersInt[strings.Fields(config.Cfg.Keys.TriggerLabels)[0]]
-	labelModifier = util.Modifiers[strings.Fields(config.Cfg.Keys.TriggerLabels)[0]]
 }
 
 func toggleAM() bool {

@@ -40,9 +40,15 @@ var (
 	}
 )
 
-type Keybinds map[int]map[gdk.ModifierType][]func() bool
+type KeybindCommand struct {
+	Label string `koanf:"label"`
+	Key   string `koanf:"key"`
+	Cmd   string `koanf:"cmd"`
+}
 
-func (binds Keybinds) Bind(val string, fn func() bool) {
+type Keybinds map[int]map[gdk.ModifierType]KeybindCommand
+
+func ParseKeybind(val string) (int, gdk.ModifierType) {
 	fields := strings.Fields(val)
 
 	m := []gdk.ModifierType{}
@@ -74,27 +80,10 @@ func (binds Keybinds) Bind(val string, fn func() bool) {
 		modifier = m[0] | m[1] | m[2]
 	}
 
-	_, ok := binds[key]
-	if !ok {
-		binds[key] = make(map[gdk.ModifierType][]func() bool)
-	}
-
-	binds[key][modifier] = append(binds[key][modifier], fn)
+	return key, modifier
 }
 
-func (binds Keybinds) Execute(key int, modifier gdk.ModifierType) bool {
-	if fns, ok := binds[key][modifier]; ok {
-		for _, fn := range fns {
-			if fn() {
-				return true
-			}
-		}
-	}
-
-	return false
-}
-
-func (Keybinds) Validate(bind string) bool {
+func ValidateKeybind(bind string) bool {
 	fields := strings.Fields(bind)
 
 	for _, v := range fields {

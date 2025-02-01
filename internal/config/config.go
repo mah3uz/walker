@@ -39,29 +39,29 @@ const (
 )
 
 type Config struct {
-	ActivationMode      ActivationMode `koanf:"activation_mode"`
-	AsWindow            bool           `koanf:"as_window"`
-	Bar                 Bar            `koanf:"bar"`
-	Builtins            Builtins       `koanf:"builtins"`
-	CloseWhenOpen       bool           `koanf:"close_when_open"`
-	DisableClickToClose bool           `koanf:"disable_click_to_close"`
-	Keys                Keys           `koanf:"keys"`
-	Disabled            []string       `koanf:"disabled"`
-	Events              Events         `koanf:"events"`
-	ForceKeyboardFocus  bool           `koanf:"force_keyboard_focus"`
-	HotreloadTheme      bool           `koanf:"hotreload_theme"`
-	IgnoreMouse         bool           `koanf:"ignore_mouse"`
-	AppLaunchPrefix     string         `koanf:"app_launch_prefix"`
-	List                List           `koanf:"list"`
-	Locale              string         `koanf:"locale"`
-	Monitor             string         `koanf:"monitor"`
-	Plugins             []Plugin       `koanf:"plugins"`
-	Search              Search         `koanf:"search"`
-	Terminal            string         `koanf:"terminal"`
-	TerminalTitleFlag   string         `koanf:"terminal_title_flag"`
-	Theme               string         `koanf:"theme"`
-	ThemeBase           []string       `koanf:"theme_base"`
-	Timeout             int            `koanf:"timeout"`
+	ActivationMode      ActivationMode        `koanf:"activation_mode"`
+	AsWindow            bool                  `koanf:"as_window"`
+	Bar                 Bar                   `koanf:"bar"`
+	Builtins            Builtins              `koanf:"builtins"`
+	CloseWhenOpen       bool                  `koanf:"close_when_open"`
+	DisableClickToClose bool                  `koanf:"disable_click_to_close"`
+	Keybinds            []util.KeybindCommand `koanf:"keybinds"`
+	Disabled            []string              `koanf:"disabled"`
+	Events              Events                `koanf:"events"`
+	ForceKeyboardFocus  bool                  `koanf:"force_keyboard_focus"`
+	HotreloadTheme      bool                  `koanf:"hotreload_theme"`
+	IgnoreMouse         bool                  `koanf:"ignore_mouse"`
+	AppLaunchPrefix     string                `koanf:"app_launch_prefix"`
+	List                List                  `koanf:"list"`
+	Locale              string                `koanf:"locale"`
+	Monitor             string                `koanf:"monitor"`
+	Plugins             []Plugin              `koanf:"plugins"`
+	Search              Search                `koanf:"search"`
+	Terminal            string                `koanf:"terminal"`
+	TerminalTitleFlag   string                `koanf:"terminal_title_flag"`
+	Theme               string                `koanf:"theme"`
+	ThemeBase           []string              `koanf:"theme_base"`
+	Timeout             int                   `koanf:"timeout"`
 
 	Available []string `koanf:"-"`
 	Hidden    []string `koanf:"-"`
@@ -101,7 +101,7 @@ type Events struct {
 	OnQueryChange string `koanf:"on_query_change"`
 }
 
-type CustomKeybindCommand struct {
+type KeybindCommand struct {
 	Label string `koanf:"label"`
 	Key   string `koanf:"key"`
 	Cmd   string `koanf:"cmd"`
@@ -201,36 +201,35 @@ type CustomCommand struct {
 }
 
 type GeneralModule struct {
-	AutoSelect         bool                   `koanf:"auto_select"`
-	Blacklist          []Blacklist            `koanf:"blacklist"`
-	HistoryBlacklist   []Blacklist            `koanf:"history_blacklist"`
-	Delay              int                    `koanf:"delay"`
-	CustomKeybinds     []CustomKeybindCommand `koanf:"custom_keybinds"`
-	EagerLoading       bool                   `koanf:"eager_loading"`
-	ExternalConfig     bool                   `koanf:"external_config"`
-	Hidden             bool                   `koanf:"hidden"`
-	History            bool                   `koanf:"history"`
-	Icon               string                 `koanf:"icon"`
-	KeepSort           bool                   `koanf:"keep_sort"`
-	MinChars           int                    `koanf:"min_chars"`
-	Name               string                 `koanf:"name"`
-	Placeholder        string                 `koanf:"placeholder"`
-	Prefix             string                 `koanf:"prefix"`
-	Refresh            bool                   `koanf:"refresh"`
-	ShowIconWhenSingle bool                   `koanf:"show_icon_when_single"`
-	ShowSubWhenSingle  bool                   `koanf:"show_sub_when_single"`
-	SwitcherOnly       bool                   `koanf:"switcher_only"`
-	Theme              string                 `koanf:"theme"`
-	ThemeBase          []string               `koanf:"theme_base"`
-	Typeahead          bool                   `koanf:"typeahead"`
-	Weight             int                    `koanf:"weight"`
-	OnSelect           string                 `koanf:"on_select"`
-	OutputPlaceholder  string                 `koanf:"output_placeholder"`
+	AutoSelect         bool             `koanf:"auto_select"`
+	Blacklist          []Blacklist      `koanf:"blacklist"`
+	HistoryBlacklist   []Blacklist      `koanf:"history_blacklist"`
+	Delay              int              `koanf:"delay"`
+	Keybinds           []KeybindCommand `koanf:"keybinds"`
+	EagerLoading       bool             `koanf:"eager_loading"`
+	ExternalConfig     bool             `koanf:"external_config"`
+	Hidden             bool             `koanf:"hidden"`
+	History            bool             `koanf:"history"`
+	Icon               string           `koanf:"icon"`
+	KeepSort           bool             `koanf:"keep_sort"`
+	MinChars           int              `koanf:"min_chars"`
+	Name               string           `koanf:"name"`
+	Placeholder        string           `koanf:"placeholder"`
+	Prefix             string           `koanf:"prefix"`
+	Refresh            bool             `koanf:"refresh"`
+	ShowIconWhenSingle bool             `koanf:"show_icon_when_single"`
+	ShowSubWhenSingle  bool             `koanf:"show_sub_when_single"`
+	SwitcherOnly       bool             `koanf:"switcher_only"`
+	Theme              string           `koanf:"theme"`
+	ThemeBase          []string         `koanf:"theme_base"`
+	Typeahead          bool             `koanf:"typeahead"`
+	Weight             int              `koanf:"weight"`
+	OnSelect           string           `koanf:"on_select"`
+	OutputPlaceholder  string           `koanf:"output_placeholder"`
 
 	// internal
-	HasInitialSetup bool          `koanf:"-"`
-	IsSetup         bool          `koanf:"-"`
-	Keybinds        util.Keybinds `koanf:"-"`
+	HasInitialSetup bool `koanf:"-"`
+	IsSetup         bool `koanf:"-"`
 }
 
 type Blacklist struct {
