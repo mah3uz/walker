@@ -101,12 +101,6 @@ type Events struct {
 	OnQueryChange string `koanf:"on_query_change"`
 }
 
-type KeybindCommand struct {
-	Label string `koanf:"label"`
-	Key   string `koanf:"key"`
-	Cmd   string `koanf:"cmd"`
-}
-
 type Bar struct {
 	Entries []BarEntry `koanf:"entries"`
 }
@@ -201,31 +195,31 @@ type CustomCommand struct {
 }
 
 type GeneralModule struct {
-	AutoSelect         bool             `koanf:"auto_select"`
-	Blacklist          []Blacklist      `koanf:"blacklist"`
-	HistoryBlacklist   []Blacklist      `koanf:"history_blacklist"`
-	Delay              int              `koanf:"delay"`
-	Keybinds           []KeybindCommand `koanf:"keybinds"`
-	EagerLoading       bool             `koanf:"eager_loading"`
-	ExternalConfig     bool             `koanf:"external_config"`
-	Hidden             bool             `koanf:"hidden"`
-	History            bool             `koanf:"history"`
-	Icon               string           `koanf:"icon"`
-	KeepSort           bool             `koanf:"keep_sort"`
-	MinChars           int              `koanf:"min_chars"`
-	Name               string           `koanf:"name"`
-	Placeholder        string           `koanf:"placeholder"`
-	Prefix             string           `koanf:"prefix"`
-	Refresh            bool             `koanf:"refresh"`
-	ShowIconWhenSingle bool             `koanf:"show_icon_when_single"`
-	ShowSubWhenSingle  bool             `koanf:"show_sub_when_single"`
-	SwitcherOnly       bool             `koanf:"switcher_only"`
-	Theme              string           `koanf:"theme"`
-	ThemeBase          []string         `koanf:"theme_base"`
-	Typeahead          bool             `koanf:"typeahead"`
-	Weight             int              `koanf:"weight"`
-	OnSelect           string           `koanf:"on_select"`
-	OutputPlaceholder  string           `koanf:"output_placeholder"`
+	AutoSelect         bool                  `koanf:"auto_select"`
+	Blacklist          []Blacklist           `koanf:"blacklist"`
+	HistoryBlacklist   []Blacklist           `koanf:"history_blacklist"`
+	Delay              int                   `koanf:"delay"`
+	Keybinds           []util.KeybindCommand `koanf:"keybinds"`
+	EagerLoading       bool                  `koanf:"eager_loading"`
+	ExternalConfig     bool                  `koanf:"external_config"`
+	Hidden             bool                  `koanf:"hidden"`
+	History            bool                  `koanf:"history"`
+	Icon               string                `koanf:"icon"`
+	KeepSort           bool                  `koanf:"keep_sort"`
+	MinChars           int                   `koanf:"min_chars"`
+	Name               string                `koanf:"name"`
+	Placeholder        string                `koanf:"placeholder"`
+	Prefix             string                `koanf:"prefix"`
+	Refresh            bool                  `koanf:"refresh"`
+	ShowIconWhenSingle bool                  `koanf:"show_icon_when_single"`
+	ShowSubWhenSingle  bool                  `koanf:"show_sub_when_single"`
+	SwitcherOnly       bool                  `koanf:"switcher_only"`
+	Theme              string                `koanf:"theme"`
+	ThemeBase          []string              `koanf:"theme_base"`
+	Typeahead          bool                  `koanf:"typeahead"`
+	Weight             int                   `koanf:"weight"`
+	OnSelect           string                `koanf:"on_select"`
+	OutputPlaceholder  string                `koanf:"output_placeholder"`
 
 	// internal
 	HasInitialSetup bool `koanf:"-"`

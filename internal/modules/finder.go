@@ -98,12 +98,15 @@ func (f *Finder) Entries(term string) []util.Entry {
 			hasExplicitResultAlt = true
 		}
 
+		homeDir, _ := os.UserHomeDir()
+
 		if score >= scoremin {
 			entry := util.Entry{
 				Label:            label,
 				Sub:              "finder",
 				Exec:             fmt.Sprintf("xdg-open '%s'", v),
 				ExecAlt:          strings.ReplaceAll(f.config.CmdAlt, "%RESULT%", label),
+				Value:            filepath.Join(homeDir, v),
 				RecalculateScore: false,
 				ScoreFinal:       score,
 				MatchStartingPos: start,
@@ -153,33 +156,6 @@ func (f *Finder) Entries(term string) []util.Entry {
 
 func (f *Finder) Setup() bool {
 	f.config = config.Cfg.Builtins.Finder
-
-	keybinds := make(util.Keybinds)
-
-	f.General().Keybinds = keybinds
-
-	f.General()
-
-	for _, v := range f.config.Keybinds {
-		if ok := keybinds.Validate(v.Key); ok {
-			keybinds.Bind(v.Key, func() bool {
-				toRun := strings.ReplaceAll(f.config.Cmd, "%RESULT%", result)
-
-				cmd := exec.Command("sh", "-c", v.Cmd)
-
-				err := cmd.Start()
-				if err != nil {
-					slog.Error("custom command", "error", err.Error())
-				}
-
-				go func() {
-					cmd.Wait()
-				}()
-
-				return true
-			})
-		}
-	}
 
 	return true
 }

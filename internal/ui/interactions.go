@@ -87,8 +87,8 @@ var lastQuery = ""
 
 func setupInteractions(appstate *state.AppState) {
 	go setupCommands()
+	setupBuiltinActions()
 	parseKeybinds()
-	parseAiKeybinds()
 
 	elements.input.Connect("changed", func() {
 		text := trimArgumentDelimiter(elements.input.Text())
@@ -290,27 +290,63 @@ func handleGlobalKeysPressed(val uint, code uint, modifier gdk.ModifierType) boo
 				val = gdk.KEY_Tab
 			}
 
-			var hasBind bool
-
 			entry := gioutil.ObjectValue[util.Entry](common.items.Item(common.selection.Selected()))
 
-			module := findModule(entry.Module, toUse)
+			keybind := keybinds[entry.Module][int(val)][modifier]
+			if fn, ok := builtinActions[keybind.Cmd]; ok {
+				fn()
+				return true
+			} else if keybind.Cmd != "" {
+				toReplace := entry.Value
 
-			hasBind = module.General().Keybinds.Execute(int(val), modifier)
+				if toReplace == "" {
+					toReplace = entry.Label
+				}
 
-			if isAi {
-				hasBind = aibinds.Execute(int(val), modifier)
-			} else {
-				hasBind = binds.Execute(int(val), modifier)
-			}
+				piped := strings.Contains(keybind.Cmd, "%RESULT%")
 
-			if isAi && !hasBind {
-				hasBind = binds.Execute(int(val), modifier)
-			}
+				toRun := strings.ReplaceAll(keybind.Cmd, "%RESULT%", toReplace)
 
-			if hasBind {
+				cmd := exec.Command("sh", "-c", toRun)
+
+				if piped {
+					cmd.Stdin = strings.NewReader(toReplace)
+				}
+
+				cmd.Start()
+
+				go func() {
+					cmd.Wait()
+				}()
+
+				if !keybind.KeepOpen {
+					if appstate.IsService {
+						quit(false)
+					} else {
+						exit(false, false)
+					}
+				}
+
 				return true
 			}
+
+			keybind = keybinds["global"][int(val)][modifier]
+			if fn, ok := builtinActions[keybind.Cmd]; ok {
+				fn()
+				return true
+			}
+
+			// hasBind = module.General().Keybinds.Execute(int(val), modifier)
+			//
+			// if isAi {
+			// 	hasBind = aibinds.Execute(int(val), modifier)
+			// } else {
+			// 	hasBind = binds.Execute(int(val), modifier)
+			// }
+			//
+			// if isAi && !hasBind {
+			// 	hasBind = binds.Execute(int(val), modifier)
+			// }
 
 			hasFocus := false
 

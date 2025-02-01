@@ -1,7 +1,6 @@
 package ui
 
 import (
-	"log/slog"
 	"slices"
 	"strings"
 
@@ -45,24 +44,9 @@ func setupBuiltinActions() {
 }
 
 func parseKeybinds() {
-	keybinds = make(Keybinds)
 	keybinds["global"] = make(util.Keybinds)
 
-	for _, v := range config.Cfg.Keybinds {
-		if ok := util.ValidateKeybind(v.Key); ok {
-			key, modifier := util.ParseKeybind(v.Key)
-
-			if _, ok := keybinds["global"][key]; !ok {
-				keybinds["global"][key] = make(map[gdk.ModifierType]util.KeybindCommand)
-			}
-
-			if _, ok := keybinds["global"][key][modifier]; !ok {
-				keybinds["global"][key][modifier] = v
-			} else {
-				slog.Error("keybinds", "duplicate keybind", v.Key, "module", "global")
-			}
-		}
-	}
+	util.BindKeybinds(config.Cfg.Keybinds, keybinds["global"])
 }
 
 func toggleAM() bool {

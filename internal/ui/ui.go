@@ -95,6 +95,7 @@ func Activate(state *state.AppState) func(app *gtk.Application) {
 		config.SetupDefaultThemeOnDisk()
 
 		hasBaseSetup = true
+		keybinds = make(Keybinds)
 	}
 
 	go setupThumbnails()

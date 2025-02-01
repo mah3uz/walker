@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"log/slog"
 	"strings"
 
@@ -41,12 +42,32 @@ var (
 )
 
 type KeybindCommand struct {
-	Label string `koanf:"label"`
-	Key   string `koanf:"key"`
-	Cmd   string `koanf:"cmd"`
+	Label    string `koanf:"label"`
+	Key      string `koanf:"key"`
+	Cmd      string `koanf:"cmd"`
+	KeepOpen bool   `koanf:"keep_open"`
 }
 
 type Keybinds map[int]map[gdk.ModifierType]KeybindCommand
+
+func BindKeybinds(keybinds []KeybindCommand, keybindsMap Keybinds) {
+	for _, v := range keybinds {
+		fmt.Println(v.Key)
+		if ok := ValidateKeybind(v.Key); ok {
+			key, modifier := ParseKeybind(v.Key)
+
+			if _, ok := keybindsMap[key]; !ok {
+				keybindsMap[key] = make(map[gdk.ModifierType]KeybindCommand)
+			}
+
+			if _, ok := keybindsMap[key][modifier]; !ok {
+				keybindsMap[key][modifier] = v
+			} else {
+				slog.Error("keybinds", "duplicate keybind", v.Key, "module", "global")
+			}
+		}
+	}
+}
 
 func ParseKeybind(val string) (int, gdk.ModifierType) {
 	fields := strings.Fields(val)

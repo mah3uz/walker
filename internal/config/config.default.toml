@@ -48,12 +48,12 @@ key = "shift backspace"
 [[keybinds]]
 label = "Resume Query"
 cmd = "%RESUME_QUERY%"
-key = "ctr r"
+key = "ctrl r"
 
 [[keybinds]]
 label = "Toggle Exact Search"
 cmd = "%TOGGLE_EXACT_SEARCH%"
-key = "ctr m"
+key = "ctrl m"
 
 [[keybinds]]
 label = "Activate (Keep Open)"
@@ -63,22 +63,22 @@ key = "shift enter"
 [[builtins.ai.keybinds]]
 label = "Clear Session"
 cmd = "%CLEAR_SESSION%"
-key = "ctr x"
+key = "ctrl x"
 
 [[builtins.ai.keybinds]]
 label = "Copy Last Response"
 cmd = "%COPY_LAST_RESPONSE%"
-key = "ctr c"
+key = "ctrl c"
 
 [[builtins.ai.keybinds]]
 label = "Resume Session"
 cmd = "%RESUME_SESSION%"
-key = "ctr r"
+key = "ctrl r"
 
 [[builtins.ai.keybinds]]
 label = "Run Last Response"
 cmd = "%RUN_LAST_RESPONSE%"
-key = "ctr e"
+key = "ctrl e"
 
 [events]
 on_activate = ""

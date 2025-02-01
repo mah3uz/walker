@@ -133,7 +133,9 @@ func setAvailables() {
 		}
 
 		if ok := v.Setup(); ok {
-			if v.General().Name == "" {
+			name := v.General().Name
+
+			if name == "" {
 				log.Panicln("module has no name")
 			}
 
@@ -141,16 +143,24 @@ func setAvailables() {
 				go v.SetupData()
 			}
 
-			if slices.Contains(config.Cfg.Disabled, v.General().Name) {
+			if slices.Contains(config.Cfg.Disabled, name) {
 				continue
 			}
 
 			available = append(available, v)
-			config.Cfg.Available = append(config.Cfg.Available, v.General().Name)
+			config.Cfg.Available = append(config.Cfg.Available, name)
 
 			if v.General().Hidden {
-				config.Cfg.Hidden = append(config.Cfg.Hidden, v.General().Name)
+				config.Cfg.Hidden = append(config.Cfg.Hidden, name)
 			}
+
+			if _, ok := keybinds[name]; !ok {
+				keybinds[name] = make(util.Keybinds)
+			}
+
+			keybinds[name] = make(util.Keybinds)
+
+			util.BindKeybinds(v.General().Keybinds, keybinds[name])
 		}
 	}
 
