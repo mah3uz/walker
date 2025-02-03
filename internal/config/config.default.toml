@@ -19,6 +19,7 @@ key = "enter"
 label = "Toggle Labels"
 cmd = "%TOGGLE_LABELS%"
 key = "lalt"
+hold = true
 
 [[keybinds]]
 label = "Accept Typeahead"

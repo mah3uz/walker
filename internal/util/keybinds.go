@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"log/slog"
 	"strings"
 
@@ -38,6 +37,10 @@ var (
 		"up":        int(gdk.KEY_Up),
 		"left":      int(gdk.KEY_Left),
 		"right":     int(gdk.KEY_Right),
+		"ralt":      int(gdk.KEY_Alt_R),
+		"lalt":      int(gdk.KEY_Alt_L),
+		"rctrl":     int(gdk.KEY_Control_R),
+		"lctrl":     int(gdk.KEY_Control_L),
 	}
 )
 
@@ -46,13 +49,13 @@ type KeybindCommand struct {
 	Key      string `koanf:"key"`
 	Cmd      string `koanf:"cmd"`
 	KeepOpen bool   `koanf:"keep_open"`
+	Hold     bool   `koanf:"hold"`
 }
 
 type Keybinds map[int]map[gdk.ModifierType]KeybindCommand
 
 func BindKeybinds(keybinds []KeybindCommand, keybindsMap Keybinds) {
 	for _, v := range keybinds {
-		fmt.Println(v.Key)
 		if ok := ValidateKeybind(v.Key); ok {
 			key, modifier := ParseKeybind(v.Key)
 
@@ -92,13 +95,15 @@ func ParseKeybind(val string) (int, gdk.ModifierType) {
 
 	modifier := gdk.NoModifierMask
 
-	switch len(m) {
-	case 1:
-		modifier = m[0]
-	case 2:
-		modifier = m[0] | m[1]
-	case 3:
-		modifier = m[0] | m[1] | m[2]
+	if len(fields) > 1 {
+		switch len(m) {
+		case 1:
+			modifier = m[0]
+		case 2:
+			modifier = m[0] | m[1]
+		case 3:
+			modifier = m[0] | m[1] | m[2]
+		}
 	}
 
 	return key, modifier

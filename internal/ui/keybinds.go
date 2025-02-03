@@ -26,21 +26,21 @@ type Keybinds map[string]util.Keybinds
 
 var (
 	keybinds       Keybinds
-	builtinActions = map[string]func(){}
+	builtinActions = map[string]func() bool{}
 )
 
 func setupBuiltinActions() {
-	builtinActions = make(map[string]func())
-	builtinActions["%ACTIVATE%"] = func() { activate(false, false) }
-	builtinActions["%ACTIVATE_KEEP_OPEN%"] = func() { activate(true, false) }
-	builtinActions["%TOGGLE_LABELS%"] = func() { toggleAM() }
-	builtinActions["%ACCEPT_TYPEAHEAD%"] = func() { elements.input.GrabFocus() }
-	builtinActions["%NEXT%"] = func() { selectNext() }
-	builtinActions["%PREV%"] = func() { selectPrev() }
-	builtinActions["%CLOSE%"] = func() { quitKeybind() }
-	builtinActions["%REMOVE_FROM_HISTORY%"] = func() { deleteFromHistory() }
-	builtinActions["%RESUME_QUERY%"] = func() { resume() }
-	builtinActions["%TOGGLE_EXACT_SEARCH%"] = func() { toggleExactMatch() }
+	builtinActions = make(map[string]func() bool)
+	builtinActions["%ACTIVATE%"] = func() bool { return activate(false, false) }
+	builtinActions["%ACTIVATE_KEEP_OPEN%"] = func() bool { return activate(true, false) }
+	builtinActions["%TOGGLE_LABELS%"] = toggleAM
+	builtinActions["%ACCEPT_TYPEAHEAD%"] = acceptTypeahead
+	builtinActions["%NEXT%"] = selectNext
+	builtinActions["%PREV%"] = selectPrev
+	builtinActions["%CLOSE%"] = quitKeybind
+	builtinActions["%REMOVE_FROM_HISTORY%"] = deleteFromHistory
+	builtinActions["%RESUME_QUERY%"] = resume
+	builtinActions["%TOGGLE_EXACT_SEARCH%"] = toggleExactMatch
 }
 
 func parseKeybinds() {
@@ -55,7 +55,11 @@ func toggleAM() bool {
 	}
 
 	if common.selection.NItems() != 0 {
-		enableAM()
+		if activationEnabled {
+			disableAM()
+		} else {
+			enableAM()
+		}
 
 		return true
 	}

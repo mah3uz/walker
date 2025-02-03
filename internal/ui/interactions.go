@@ -247,128 +247,124 @@ func disableAM() {
 	}
 }
 
-func handleGlobalKeysReleased(val, code uint, state gdk.ModifierType) {
-	switch val {
-	case uint(labelTrigger):
-		disableAM()
+func handleGlobalKeysReleased(val, code uint, modifier gdk.ModifierType) {
+	if val == gdk.KEY_Alt_L || val == gdk.KEY_Alt_R {
+		modifier = gdk.NoModifierMask
+	}
+
+	if keybind, ok := keybinds["global"][int(val)][modifier]; ok {
+		if keybind.Hold {
+			if fn, ok := builtinActions[keybind.Cmd]; ok {
+				fn()
+			}
+		}
 	}
 }
 
 func handleGlobalKeysPressed(val uint, code uint, modifier gdk.ModifierType) bool {
 	timeoutReset()
 
-	if val == uint(labelTrigger) && !config.Cfg.ActivationMode.Disabled {
-		enableAM()
-		return true
-	} else {
-		switch val {
-		case gdk.KEY_F1, gdk.KEY_F2, gdk.KEY_F3, gdk.KEY_F4, gdk.KEY_F5, gdk.KEY_F6, gdk.KEY_F7, gdk.KEY_F8:
-			index := slices.Index(fkeys, val)
-
-			if index != -1 {
-				isShift := modifier == gdk.ShiftMask
-				selectActivationMode(isShift, true, uint(index))
-				return true
-			}
-		default:
-			if !config.Cfg.ActivationMode.Disabled && activationEnabled {
-				uc := gdk.KeyvalToUnicode(gdk.KeyvalToLower(val))
-
-				if uc != 0 {
-					index := slices.Index(appstate.UsedLabels, string(rune(uc)))
-
-					if index != -1 {
-						keepOpen := modifier == (keepOpenModifier | labelModifier)
-
-						selectActivationMode(keepOpen, false, uint(index))
-						return true
-					}
-				}
-			}
-
-			if val == gdk.KEY_ISO_Left_Tab {
-				val = gdk.KEY_Tab
-			}
-
-			entry := gioutil.ObjectValue[util.Entry](common.items.Item(common.selection.Selected()))
-
-			keybind := keybinds[entry.Module][int(val)][modifier]
-			if fn, ok := builtinActions[keybind.Cmd]; ok {
-				fn()
-				return true
-			} else if keybind.Cmd != "" {
-				toReplace := entry.Value
-
-				if toReplace == "" {
-					toReplace = entry.Label
-				}
-
-				piped := strings.Contains(keybind.Cmd, "%RESULT%")
-
-				toRun := strings.ReplaceAll(keybind.Cmd, "%RESULT%", toReplace)
-
-				cmd := exec.Command("sh", "-c", toRun)
-
-				if piped {
-					cmd.Stdin = strings.NewReader(toReplace)
-				}
-
-				cmd.Start()
-
-				go func() {
-					cmd.Wait()
-				}()
-
-				if !keybind.KeepOpen {
-					if appstate.IsService {
-						quit(false)
-					} else {
-						exit(false, false)
-					}
-				}
-
-				return true
-			}
-
-			keybind = keybinds["global"][int(val)][modifier]
-			if fn, ok := builtinActions[keybind.Cmd]; ok {
-				fn()
-				return true
-			}
-
-			// hasBind = module.General().Keybinds.Execute(int(val), modifier)
-			//
-			// if isAi {
-			// 	hasBind = aibinds.Execute(int(val), modifier)
-			// } else {
-			// 	hasBind = binds.Execute(int(val), modifier)
-			// }
-			//
-			// if isAi && !hasBind {
-			// 	hasBind = binds.Execute(int(val), modifier)
-			// }
-
-			hasFocus := false
-
-			focused := elements.appwin.Window.Focus()
-			widget, ok := focused.(*gtk.Text)
-
-			if ok {
-				_, ok := widget.Parent().(*gtk.Entry)
-				if ok {
-					hasFocus = true
-				}
-			}
-
-			if !hasFocus {
-				elements.input.GrabFocus()
-				char := gdk.KeyvalToUnicode(val)
-				elements.input.SetText(elements.input.Text() + string(rune(char)))
-				elements.input.SetPosition(-1)
-			}
-
+	switch val {
+	case gdk.KEY_F1, gdk.KEY_F2, gdk.KEY_F3, gdk.KEY_F4, gdk.KEY_F5, gdk.KEY_F6, gdk.KEY_F7, gdk.KEY_F8:
+		if !activationEnabled {
 			return false
 		}
+
+		index := slices.Index(fkeys, val)
+
+		if index != -1 {
+			isShift := modifier == gdk.ShiftMask
+			selectActivationMode(isShift, true, uint(index))
+			return true
+		}
+	default:
+		if !config.Cfg.ActivationMode.Disabled && activationEnabled {
+			uc := gdk.KeyvalToUnicode(gdk.KeyvalToLower(val))
+
+			if uc != 0 {
+				index := slices.Index(appstate.UsedLabels, string(rune(uc)))
+
+				if index != -1 {
+					keepOpen := modifier == (keepOpenModifier | labelModifier)
+
+					selectActivationMode(keepOpen, false, uint(index))
+					return true
+				}
+			}
+		}
+
+		if val == gdk.KEY_ISO_Left_Tab {
+			val = gdk.KEY_Tab
+		}
+
+		if common.selection.NItems() == 0 {
+			return false
+		}
+
+		entry := gioutil.ObjectValue[util.Entry](common.items.Item(common.selection.Selected()))
+
+		keybind := keybinds[entry.Module][int(val)][modifier]
+		if fn, ok := builtinActions[keybind.Cmd]; ok {
+			return fn()
+		} else if keybind.Cmd != "" {
+			toReplace := entry.Value
+
+			if toReplace == "" {
+				toReplace = entry.Label
+			}
+
+			piped := strings.Contains(keybind.Cmd, "%RESULT%")
+
+			toRun := strings.ReplaceAll(keybind.Cmd, "%RESULT%", toReplace)
+
+			cmd := exec.Command("sh", "-c", toRun)
+
+			if piped {
+				cmd.Stdin = strings.NewReader(toReplace)
+			}
+
+			cmd.Start()
+
+			go func() {
+				cmd.Wait()
+			}()
+
+			if !keybind.KeepOpen {
+				if appstate.IsService {
+					quit(false)
+				} else {
+					exit(false, false)
+				}
+			}
+
+			return true
+		}
+
+		keybind = keybinds["global"][int(val)][modifier]
+		if fn, ok := builtinActions[keybind.Cmd]; ok {
+			return fn()
+		}
+
+		hasFocus := false
+
+		focused := elements.appwin.Window.Focus()
+		widget, ok := focused.(*gtk.Text)
+
+		if ok {
+			_, ok := widget.Parent().(*gtk.Entry)
+			if ok {
+				hasFocus = true
+			}
+		}
+
+		if !hasFocus {
+			elements.input.GrabFocus()
+			char := gdk.KeyvalToUnicode(val)
+			elements.input.SetText(elements.input.Text() + string(rune(char)))
+			elements.input.SetPosition(-1)
+		}
+
+		return false
 	}
 
 	return false
