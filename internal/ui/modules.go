@@ -19,8 +19,6 @@ import (
 	"github.com/abenz1267/walker/internal/modules/emojis"
 	"github.com/abenz1267/walker/internal/modules/symbols"
 	"github.com/abenz1267/walker/internal/modules/translation"
-	"github.com/abenz1267/walker/internal/modules/windows"
-	"github.com/abenz1267/walker/internal/modules/windows/wlr"
 	"github.com/abenz1267/walker/internal/util"
 	"github.com/knadh/koanf/parsers/toml/v2"
 	"github.com/knadh/koanf/providers/rawbytes"
@@ -137,7 +135,6 @@ func setAvailables() {
 		&emojis.Emojis{},
 		&symbols.Symbols{},
 		&modules.CustomCommands{},
-		&windows.Windows{},
 		&translation.Translation{},
 	}
 
@@ -203,12 +200,6 @@ func setAvailables() {
 				config.Cfg.Hidden = append(config.Cfg.Hidden, appstate.Clipboard.General().Name)
 			}
 		}
-	}
-
-	windows := findModule("windows", available)
-
-	if windows != nil || config.Cfg.Builtins.Applications.ContextAware {
-		go wlr.StartWM()
 	}
 }
 

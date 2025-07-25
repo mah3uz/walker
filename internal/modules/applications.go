@@ -17,7 +17,6 @@ import (
 
 	"github.com/abenz1267/walker/internal/config"
 	"github.com/abenz1267/walker/internal/history"
-	"github.com/abenz1267/walker/internal/modules/windows/wlr"
 	"github.com/abenz1267/walker/internal/util"
 	"github.com/adrg/xdg"
 	"github.com/djherbis/times"
@@ -136,11 +135,6 @@ func (a *Applications) Refresh() {
 
 func (a *Applications) Entries(term string) []*util.Entry {
 	if a.config.ContextAware {
-		for k, v := range a.entries {
-			if val, ok := wlr.OpenWindows[v.InitialClass]; ok {
-				a.entries[k].OpenWindows = val
-			}
-		}
 	}
 
 	if a.config.Actions.HideWithoutQuery && term == "" {
